@@ -2,6 +2,8 @@
 
 A **portfolio** is a curated collection of work that showcases your **skills, projects, achievements, and experiences** in a particular field such as tech, design, research, or content creation.
 
+LINK : https://karanchrish.github.io/portfolio
+
 ### 🚀 What Can a Portfolio Do?
 - ✅ Demonstrates your practical abilities to employers, clients, or collaborators  
 - ✅ Highlights real-world projects and outcomes  
