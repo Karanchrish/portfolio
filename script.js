@@ -28,7 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Active Navigation Link
     const sections = document.querySelectorAll('section');
-    window.addEventListener('scroll', function() {
+    const navItems = document.querySelectorAll('.nav-links li a');
+    
+    function updateActiveNav() {
         let current = '';
         
         sections.forEach(section => {
@@ -40,13 +42,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        document.querySelectorAll('.nav-links li a').forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            const href = item.getAttribute('href');
+            
+            // Check for both hash links and page links
+            if (href === `#${current}` || 
+                (current === 'blog' && href === 'blog.html') ||
+                (current === 'home' && href === 'index.html')) {
+                item.classList.add('active');
             }
         });
-    });
+    }
+    
+    window.addEventListener('scroll', updateActiveNav);
+    
+    // Set active nav item on page load
+    updateActiveNav();
     
     // Back to Top Button
     const backToTop = document.querySelector('.back-to-top');
@@ -66,9 +78,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Smooth Scrolling
+    // Smooth Scrolling for internal links only
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
+            // Skip if it's a link to another page
+            if (this.getAttribute('href').includes('.html')) return;
+            
             e.preventDefault();
             
             const targetId = this.getAttribute('href');
@@ -89,6 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const statsSection = document.querySelector('.about-stats');
     
     function animateStats() {
+        if (!statsSection) return;
+        
         const statsPosition = statsSection.getBoundingClientRect().top;
         const screenPosition = window.innerHeight / 1.3;
         
@@ -116,7 +133,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    window.addEventListener('scroll', animateStats);
+    if (statNumbers.length > 0) {
+        window.addEventListener('scroll', animateStats);
+    }
     
     // Animate Skill Bars
     const skillBars = document.querySelectorAll('.skill-progress');
@@ -130,37 +149,41 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Trigger animation when skills section is in view
     const skillsSection = document.querySelector('.skills');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateSkills();
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.2 });
-    
-    observer.observe(skillsSection);
+    if (skillsSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateSkills();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        
+        observer.observe(skillsSection);
+    }
     
     // Project Filtering
     const filterBtns = document.querySelectorAll('.filter-btn');
     const projectItems = document.querySelectorAll('.project-item');
     
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            filterBtns.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            const filter = this.getAttribute('data-filter');
-            
-            projectItems.forEach(item => {
-                if (filter === 'all' || item.getAttribute('data-category') === filter) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+    if (filterBtns.length > 0) {
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                
+                projectItems.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
             });
         });
-    });
+    }
     
     // Form submission
     const contactForm = document.getElementById('contactForm');
@@ -193,4 +216,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set current year in footer
     document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Handle external blog links
+    document.querySelectorAll('.project-links a[target="_blank"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent the card click event
+        });
+    });
 });
